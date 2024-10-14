@@ -1,4 +1,4 @@
-const asyncHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler")
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -9,15 +9,17 @@ const AppError = require("../utils/appError");
 const emailBody = require("../utils/emailBody");
 const UserModel = require("../models/UserModel");
 
-// Function to generate authentication tokens (access and refresh)
-// It stores the refresh token in an HTTP-only cookie and returns the access token.
+/**
+ * Generate authentication tokens (access and refresh).
+ * Stores the refresh token in an HTTP-only cookie and returns the access token.
+ */
 const authToken = (res, user) => {
   const accessToken = generateToken(
     { userid: user._id },
     process.env.JWT_ACCESS_SECRET_KEY,
-    50
+    "8h"
   );
-  
+
   const refreshToken = generateToken(
     { userid: user._id },
     process.env.JWT_REFRESH_SECRET_KEY,
@@ -25,7 +27,7 @@ const authToken = (res, user) => {
   );
 
   res.cookie("token", refreshToken, {
-    maxAge: 1000 * 60 * 60 * 24 * 5,
+    maxAge: 1000 * 60 * 60 * 24 * 5, // 5 days
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
@@ -33,8 +35,10 @@ const authToken = (res, user) => {
   return accessToken;
 };
 
-// Function for user signup
-// Creates a new user, generates an access token, and returns the user data without the password.
+/**
+ * @route POST /api/v1/signup
+ * @access Public
+ */
 const signup = asyncHandler(async (req, res) => {
   const user = await UserModel.create(req.body);
   const accessToken = authToken(res, user);
@@ -42,15 +46,18 @@ const signup = asyncHandler(async (req, res) => {
   res.status(201).json({ status: httpstatus.SUCCESS, data: user, accessToken });
 });
 
-// Function for user login
-// Validates user credentials, generates an access token if credentials are correct.
+/**
+ * @route POST /api/signin
+ * @access Public
+ */
 const signin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await UserModel.findOne({ email }, { password: 0, __v: 0 });
+  const user = await UserModel.findOne({ email }, { __v: 0 });
 
   if (!user) {
     throw new AppError(401, httpstatus.FAIL, "Invalid email or password.");
   }
+
 
   const isCorrectPassword = await bcrypt.compare(password, user.password);
   if (!isCorrectPassword) {
@@ -61,11 +68,14 @@ const signin = asyncHandler(async (req, res) => {
   res.status(200).json({ status: httpstatus.SUCCESS, data: user, accessToken });
 });
 
-// Function for forgot password
-// Sends a password reset email with a token to the user's email.
+/**
+ * @route POST /api/v1/forgot-password
+ * @access Public
+ */
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
   const user = await UserModel.findOne({ email }).exec();
+
   const token = generateToken(
     { userid: user._id },
     process.env.JWT_RESET_PASSWORD_KEY,
@@ -80,20 +90,19 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   try {
     await sendEmail(mailOption);
-    res
-      .status(200)
-      .json({ status: httpstatus.SUCCESS, data: "Email sent successfully" });
+    res.status(200).json({ status: httpstatus.SUCCESS, data: "Email sent successfully" });
   } catch (error) {
     console.log(error);
     throw new AppError(500, httpstatus.FAIL, "Email Could Not Be Sent");
   }
 });
 
-// Function for resetting the password
-// Verifies the reset token and updates the user's password.
+/**
+ * @route put /api/reset-password
+ * @access Public
+ */
 const resetPassword = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-  const { password } = req.body;
+  const { password, token } = req.body;
 
   const decoded = jsonwebtoken.verify(
     token,
@@ -113,16 +122,21 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
-// Function for editing the password (user is already logged in)
-// Updates the user's password and generates a new access token.
+/**
+
+ * @route put /api/v1/edit-password
+ * @access Private
+ */
 const editPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
   const user = await UserModel.findById(req.user._id);
+
+
   user.password = password;
   await user.save();
 
   const accessToken = authToken(res, user);
-  
+
   res.status(201).json({
     status: httpstatus.SUCCESS,
     data: "Password changed successfully",
@@ -130,19 +144,22 @@ const editPassword = asyncHandler(async (req, res) => {
   });
 });
 
-// Function for user logout
-// Clears the refresh token cookie to log the user out.
+/**
+ * @route git/api/v1/logout
+ * @access Private
+ */
 const logout = asyncHandler(async (req, res) => {
   res.clearCookie("token");
-  res
-    .status(200)
-    .json({ status: httpstatus.SUCCESS, data: "Successfully logged out." });
+  res.status(200).json({ status: httpstatus.SUCCESS, data: "Successfully logged out." });
 });
 
-// Function to generate a new access token
-// Verifies the refresh token from the cookies and issues a new access token.
+/**
+ * @route POST /api/token
+ * @access Private
+ */
 const generateNewAccsessToken = asyncHandler(async (req, res) => {
   const authorizationHeader = req.header('authorization') || req.header('Authorization');
+
 
   if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
     throw new AppError(401, httpstatus.ERROR, "You are not logged in. Please log in to access this route.");
@@ -154,10 +171,11 @@ const generateNewAccsessToken = asyncHandler(async (req, res) => {
   }
 
   const decodedRefreshToken = await jsonwebtoken.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY);
+
   const accessToken = generateToken(
     { userid: decodedRefreshToken.userid },
     process.env.JWT_ACCESS_SECRET_KEY,
-    "5m"
+    "8h"
   );
   res.json({ accessToken });
 });

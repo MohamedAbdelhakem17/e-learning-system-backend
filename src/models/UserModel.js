@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const { systemRoles } = require("../config/systemVariables");
 
-const roles = require("../config/systemRoles")
 
+// User Schema Definition
 const userSchema = new mongoose.Schema(
   {
     first_name: {
@@ -24,10 +25,10 @@ const userSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: [true, "User email is required"],
+      required: [true, "Please provide your email address"],
       trim: true,
-      unique: [true, "This email already exists"],
-      validate: [validator.isEmail, "Please provide a valid email"],
+      unique: [true, "This email is already registered"],
+      validate: [validator.isEmail, "Please provide a valid email address"],
       lowercase: true,
     },
 
@@ -53,38 +54,83 @@ const userSchema = new mongoose.Schema(
 
     user_role: {
       type: String,
-      enum: [...Object.values(roles)],
-      default: roles.USER
-    }
+      enum: [...Object.values(systemRoles)],
+      default: systemRoles.USER,
+    },
+
+    is_instructor: {
+      type: Boolean,
+      default: false
+    },
+    profile_pic: String,
+    about_me: String,
+    Introductory_video: String,
+
+    specialization: {
+      type: String , 
+    }, 
+
+    education: [{
+      title: String,
+      description: String,
+      start_time: Date,
+      end_time: Date,
+    }],
+
+    social_media_links: {
+      type: [
+        {
+          title: String,
+          link: {
+            type: String,
+            validate: [validator.isURL, "Please provide a valid URL"],
+          },
+        },
+      ],
+    },
+    
   },
 
   {
     timestamps: true,
     toJSON: {
       virtuals: true,
+      versionKey: false,
       transform: (doc, ret) => {
         delete ret.id;
+        delete ret.password;
         return ret;
       },
     },
     toObject: {
       virtuals: true,
+      versionKey: false,
       transform: (doc, ret) => {
         delete ret.id;
+        delete ret.password;
         return ret;
       },
     },
   }
 );
 
+// Hash password before saving user
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+  try {
+    if (!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 12);
+    next();
+  } catch (err) {
+    return next(err);
+  }
 });
 
+
+// Virtual for full name
 userSchema.virtual("full_name").get(function () {
   return `${this.first_name} ${this.last_name}`;
 });
+
+userSchema.index({ email: 1 });
 
 module.exports = mongoose.model("User", userSchema);

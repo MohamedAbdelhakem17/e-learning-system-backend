@@ -19,13 +19,13 @@ router
   .post(AuthvVlidator.forgotPasswordValidator, AuthController.forgotPassword);
 
 router
-  .route("/resetPassword/:token")
+  .route("/resetPassword")
   .put(AuthvVlidator.resetPasswordValidator, AuthController.resetPassword);
 
 
 router
   .route("/editPassword")
-  .put(protect, AuthController.editPassword);
+  .put(protect, AuthvVlidator.editPasswordValidator, AuthController.editPassword);
 
 router
   .route("/logout")
@@ -33,6 +33,6 @@ router
 
 router
   .route("/refresh")
-  .get( AuthController.generateNewAccsessToken);
+  .get(AuthController.generateNewAccsessToken);
 
 module.exports = router;

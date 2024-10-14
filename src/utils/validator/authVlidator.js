@@ -16,11 +16,7 @@ const signupValidator = [
     )
     .isLength({ min: 3, max: 20 })
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "First name must be between 3 and 20 characters."
-      )
+      "First name must be between 3 and 20 characters."
     ),
 
   check("last_name")
@@ -31,11 +27,7 @@ const signupValidator = [
     )
     .isLength({ min: 3, max: 20 })
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Last name must be between 3 and 20 characters."
-      )
+      "Last name must be between 3 and 20 characters."
     ),
 
   check("email")
@@ -45,11 +37,7 @@ const signupValidator = [
     .toLowerCase()
     .isEmail()
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Please insert a valid email, such as 'someone@example.com'."
-      )
+      "Please insert a valid email, such as 'someone@example.com'."
     )
     .custom(async (email) => {
       const user = await userModel.findOne({ email });
@@ -65,19 +53,12 @@ const signupValidator = [
     .withMessage(createValidationError(400, FAIL, "Password is required."))
     .isLength({ min: 8 })
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must be more than 8 characters."
-      )
+      "Password must be more than 8 characters."
     )
     .matches(/[a-zA-Z0-9_]{8,}/)
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must contain at least 8 characters with letters, numbers, or underscores."
-      )
+
+      "Password must contain at least 8 characters with letters, numbers, or underscores."
     )
     .custom((password, { req }) => {
       if (password !== req.body.passwordConfirm) {
@@ -102,11 +83,7 @@ const signupValidator = [
     .trim()
     .isMobilePhone("ar-EG")
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Please insert a valid Egyptian phone number."
-      )
+      "Please insert a valid Egyptian phone number."
     ),
 
   validatorMiddleware,
@@ -119,11 +96,7 @@ const signinValidator = [
     .withMessage(createValidationError(400, FAIL, "User email is required."))
     .isEmail()
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Please insert a valid email, such as 'someone@example.com'."
-      )
+      "Please insert a valid email, such as 'someone@example.com'."
     ),
 
   check("password")
@@ -142,11 +115,7 @@ const forgotPasswordValidator = [
     .withMessage(createValidationError(400, FAIL, "User email is required."))
     .isEmail()
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Please insert a valid email, such as 'someone@example.com'."
-      )
+      "Please insert a valid email, such as 'someone@example.com'."
     )
     .custom(async (email) => {
       const user = await userModel.findOne({ email });
@@ -165,19 +134,11 @@ const resetPasswordValidator = [
     .withMessage(createValidationError(400, FAIL, "Password is required."))
     .isLength({ min: 8 })
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must be more than 8 characters."
-      )
+      "Password must be more than 8 characters."
     )
     .matches(/[a-zA-Z0-9_]{8,}/)
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must contain at least 8 characters with letters, numbers, or underscores."
-      )
+      "Password must contain at least 8 characters with letters, numbers, or underscores."
     )
     .custom((password, { req }) => {
       if (password !== req.body.passwordConfirm) {
@@ -200,7 +161,7 @@ const resetPasswordValidator = [
 ];
 
 const editPasswordValidator = [
-  check("oldPassword").trim()
+  check("currentPassword").trim()
     .notEmpty()
     .withMessage(createValidationError(400, FAIL, "Password is required."))
     .custom(async (password, { req }) => {
@@ -214,19 +175,11 @@ const editPasswordValidator = [
     .withMessage(createValidationError(400, FAIL, "Password is required."))
     .isLength({ min: 8 })
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must be more than 8 characters."
-      )
+      "Password must be more than 8 characters."
     )
     .matches(/[a-zA-Z0-9_]{8,}/)
     .withMessage(
-      createValidationError(
-        400,
-        FAIL,
-        "Password must contain at least 8 characters with letters, numbers, or underscores."
-      )
+      "Password must contain at least 8 characters with letters, numbers, or underscores."
     )
     .custom((password, { req }) => {
       if (password !== req.body.passwordConfirm) {

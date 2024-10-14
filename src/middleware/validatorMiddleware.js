@@ -2,17 +2,14 @@ const { validationResult } = require("express-validator");
 
 const AppError = require("../utils/appError");
 const { FAIL } = require("../config/httpstatus");
+const errorFormat = require("../utils/errorFormat")
 
 const validatorMiddleware = (req, res, next) => {
-  const result = validationResult(req);
-  if (!result.isEmpty()) {
-    const errors = result.array().reduce((acc, error) => {
-      acc[error.path] = (acc[error.path] || []).concat(error.msg);
-      return acc;
-    }, {});
-    throw new AppError(400, FAIL, errors);
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+      throw new AppError(400, FAIL, errorFormat(errors.array()))
   }
-  next();
-};
+  next()
+}
 
 module.exports = validatorMiddleware;
