@@ -20,9 +20,26 @@ const categorySchema = new mongoose.Schema(
         imageCover: {
             type: String,
         },
-        
+
     },
     { timestamps: true }
 );
+
+
+const setImageURL = (doc) => {
+    if (doc.imageCover) {
+        const imageUrl = `${process.env.WEPSIT_HOST}/categories/${doc.imageCover}`;
+        doc.imageCover = imageUrl;
+    }
+};
+
+categorySchema.post("init", (doc) => {
+    setImageURL(doc);
+});
+
+categorySchema.post("save", (doc) => {
+    setImageURL(doc);
+});
+
 
 module.exports = mongoose.model("Category", categorySchema);
