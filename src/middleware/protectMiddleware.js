@@ -20,9 +20,9 @@ const protect = asyncHandler(async (req, res, next) => {
     if (!user) throw new AppError(404, httpstatus.ERROR, "The user that belongs to this token no longer exists.");
 
 
-    const passChangedTimestamp = Math.floor(user.updatedAt.getTime() / 1000);
+    // const passChangedTimestamp = Math.floor(user.updatedAt.getTime() / 1000);
 
-    if (passChangedTimestamp > accessTokenDecoded.iat) throw new AppError(401, httpstatus.ERROR, "User recently changed their password. Please log in again.");
+    // if (passChangedTimestamp > accessTokenDecoded.iat) throw new AppError(401, httpstatus.ERROR, "User recently changed their password. Please log in again.");
 
 
     req.user = user;

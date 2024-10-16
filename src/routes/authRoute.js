@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route("/signup")
-  .post(AuthvVlidator.signupValidator, AuthController.signup);
+  .post(AuthController.imageUserUpload, AuthController.imageUserUpload, AuthvVlidator.signupValidator, AuthController.signup);
 
 router
   .route("/signin")

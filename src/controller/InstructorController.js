@@ -1,23 +1,28 @@
-const asyncHandler = require("express-async-handler");
-const httpstatus = require("../config/httpstatus");
-const AppError = require("../utils/appError");
+// const asyncHandler = require("express-async-handler");
+// const httpstatus = require("../config/httpstatus");
+// const AppError = require("../utils/appError");
+const Factory = require("./handlersFactory");
 const UserModel = require("../models/UserModel");
-
 /**
  * Fetch all instructors from the database.
  * @route GET /api/v1/instructors
  * @access Public
  */
-const getInstructors = asyncHandler(async (req, res) => {
-    const instructors = await UserModel.find(
-        { is_instructor: true },
-        { name: 1, numberOfStudent: 1, rate: 1, specialization: 1, profile_pic: 1 }
-    );
 
-    res.status(200).json({
-        status: httpstatus.SUCCESS,
-        data: instructors
-    });
+const createFilterObj = (req, res, next) => {
+    const filterObject = { is_instructor: true };
+    req.body.filterObj = filterObject;
+    next();
+};
+
+const getInstructors = Factory.getAll(UserModel, {
+    name: 1,
+    numberOfStudent: 1,
+    rate: 1,
+    specialization: 1,
+    profile_pic: 1,
+    first_name: 1,
+    last_name: 1,
 });
 
 /**
@@ -26,19 +31,10 @@ const getInstructors = asyncHandler(async (req, res) => {
  * @access Public
  * @param {string} id - The ID of the instructor to retrieve
  */
-const getInstructor = asyncHandler(async (req, res) => {
-    const instructorId = req.params.id;
-    const instructor = await UserModel.findById(instructorId, { password: 0, __v: 0 });
-    if (!instructor) {
-        throw new AppError(404, httpstatus.FAIL, "Instructor not found");
-    }
-    res.status(200).json({
-        status: httpstatus.SUCCESS,
-        data: instructor
-    });
-});
+const getInstructor = Factory.getOne(UserModel)
 
 module.exports = {
+    createFilterObj,
     getInstructors,
-    getInstructor
+    getInstructor,
 };

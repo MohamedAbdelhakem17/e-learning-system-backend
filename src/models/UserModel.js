@@ -67,8 +67,8 @@ const userSchema = new mongoose.Schema(
     Introductory_video: String,
 
     specialization: {
-      type: String , 
-    }, 
+      type: String,
+    },
 
     education: [{
       title: String,
@@ -88,7 +88,21 @@ const userSchema = new mongoose.Schema(
         },
       ],
     },
-    
+    ratingsAverage: {
+      type: Number,
+      min: [1, "Rating must be above or equal 1.0"],
+      max: [5, "Rating must be below or equal 5.0"],
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+    },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
   },
 
   {
@@ -131,6 +145,13 @@ userSchema.virtual("full_name").get(function () {
   return `${this.first_name} ${this.last_name}`;
 });
 
+
+userSchema.virtual("reviews", {
+  ref: "InstructorReview",
+  localField: "_id",
+  foreignField: "instructor",
+  justOne: false,
+});
 userSchema.index({ email: 1 });
 
 module.exports = mongoose.model("User", userSchema);

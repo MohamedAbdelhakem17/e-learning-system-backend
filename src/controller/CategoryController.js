@@ -2,7 +2,7 @@ const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 
 const Factory = require("./handlersFactory");
-const { uploadSingleImage } = require("../middleware/imageUploadingMiddleware");
+const { uploadSingleImage } = require("../middleware/FileUploadingMiddleware");
 const CategoryModel = require("../models/CategoryModel");
 
 // handel image upload

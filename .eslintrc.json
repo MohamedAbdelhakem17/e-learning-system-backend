@@ -9,6 +9,8 @@
     ],
     "rules": {
         // "prettier/prettier": "error",
+        "node/no-unsupported-features/es-syntax": "off",
+        "import/no-extraneous-dependencies": "off",
         "eslint-disable import/no-extraneous-dependencies": "off",
         "spaced-comment": "off",
         "no-console": "off",

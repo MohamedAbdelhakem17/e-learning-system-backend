@@ -1,12 +1,15 @@
 const asyncHandler = require("express-async-handler")
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const sharp = require("sharp");
+const { v4: uuidv4 } = require("uuid");
 
 const generateToken = require("../utils/createToken");
 const httpstatus = require("../config/httpstatus");
 const sendEmail = require("../utils/sendEmail");
 const AppError = require("../utils/appError");
 const emailBody = require("../utils/emailBody");
+const { uploadSingleImage } = require("../middleware/FileUploadingMiddleware")
 const UserModel = require("../models/UserModel");
 
 /**
@@ -39,6 +42,21 @@ const authToken = (res, user) => {
  * @route POST /api/v1/signup
  * @access Public
  */
+// handel image upload
+const imageUserUpload = uploadSingleImage("profile_pic");
+const imageManipulation = async (req, res, next) => {
+  console.log(req.body)
+  if (req.file) {
+    const filename = `user-${uuidv4()}-${Date.now()}.jpeg`;
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 95 })
+      .toFile(`uploads/users/${filename}`);
+    req.body.imageCover = filename;
+  }
+  next();
+};
 const signup = asyncHandler(async (req, res) => {
   const user = await UserModel.create(req.body);
   const accessToken = authToken(res, user);
@@ -52,7 +70,7 @@ const signup = asyncHandler(async (req, res) => {
  */
 const signin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await UserModel.findOne({ email }, { __v: 0 });
+  const user = await UserModel.findOne({ email }, { first_name: 1, last_name: 1, profile_pic: 1, email: 1, phone: 1, password: 1 });
 
   if (!user) {
     throw new AppError(401, httpstatus.FAIL, "Invalid email or password.");
@@ -65,6 +83,7 @@ const signin = asyncHandler(async (req, res) => {
   }
 
   const accessToken = authToken(res, user);
+  delete user.toObject().password
   res.status(200).json({ status: httpstatus.SUCCESS, data: user, accessToken });
 });
 
@@ -180,4 +199,4 @@ const generateNewAccsessToken = asyncHandler(async (req, res) => {
   res.json({ accessToken });
 });
 
-module.exports = { signup, signin, forgotPassword, resetPassword, logout, editPassword, generateNewAccsessToken };
+module.exports = { signup, signin, forgotPassword, resetPassword, logout, editPassword, generateNewAccsessToken, imageManipulation, imageUserUpload };

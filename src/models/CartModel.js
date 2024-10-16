@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
 const CartSchema = new mongoose.Schema({
-    course: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-        required: true,
-    },
-    user_Id: {
+    cartItem: [{
+        course: {
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+            required: true,
+        },
+        price: Number
+    }
+    ],
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
@@ -14,7 +18,7 @@ const CartSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0,
-    }, 
+    },
     discounted_price: {
         type: Number,
         min: 0,

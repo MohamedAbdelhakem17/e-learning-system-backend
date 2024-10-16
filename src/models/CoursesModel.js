@@ -21,7 +21,7 @@ const coursesSchema = new mongoose.Schema(
             type: String,
         },
 
-        p: {
+        instructor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: [true, "Please insert an instructor ID"],
@@ -96,10 +96,39 @@ const coursesSchema = new mongoose.Schema(
             type: String,
         },
 
+        duration: {
+            type: {
+                hours: Number,
+                weeks: Number
+            }
+        },
+
+        difficulty_level: {
+            type: String,
+            required: true
+        }
+        ,
+        ratingsAverage: {
+            type: Number,
+            min: [1, "Rating must be above or equal 1.0"],
+            max: [5, "Rating must be below or equal 5.0"],
+        },
+        ratingsQuantity: {
+            type: Number,
+            default: 0,
+        },
+        
+        total_student_enrolled: Number
+
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-
+coursesSchema.virtual("reviews", {
+    ref: "CourseReview",
+    localField: "_id",
+    foreignField: "course",
+    justOne: false,
+});
 
 module.exports = mongoose.model("Course", coursesSchema);

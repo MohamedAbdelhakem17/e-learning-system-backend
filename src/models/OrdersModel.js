@@ -1,30 +1,43 @@
+// models/OrdersModel.js
+
 const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
-    cart_item: {
-        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-        required: true,
-    },
-    user_Id: {
+    cartItem: [{
+        course: {
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+            required: true,
+        },
+        price: Number
+    }
+    ],
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    total_price: {
+    totalPrice: {
         type: Number,
         required: true,
         min: 0,
     },
-    is_Paid: {
+    isPaid: {
         type: Boolean,
         default: true
     },
-    payment_at: {
+    paymentAt: {
         type: Date,
-        required: true,
+        default: Date.now
     }
 }, { timestamps: true });
 
+OrderSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "cartItem.course",
+        select: "name description slug imageCover ratingsAverage ratingsQuantity total_student_enrolled",
+    });
+    next();
+});
 const Order = mongoose.model('Order', OrderSchema);
 
 module.exports = Order;

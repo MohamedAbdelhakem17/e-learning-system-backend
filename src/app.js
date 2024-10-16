@@ -1,18 +1,35 @@
 require("dotenv").config();
+const path = require("path")
+
 const express = require("express");
 const cookieParser = require("cookie-parser")
+const morgan = require("morgan")
+const cors = require("cors")
+const compression = require("compression")
 
 const dbConnection = require("./config/databaseConection");
 const AppError = require("./utils/appError");
 const ErrorHandelMiddleware = require("./middleware/ErrorHandelMiddleware");
 const amountRoutes = require("./routes")
 
+const app = express();
+
 // database connection
 dbConnection();
+if (process.env.ENVIRONMENT_MODE === "development") {
+  app.use(morgan("dev"))
+}
 
-const app = express();
+app.use(cors())
+app.options("*", cors())
+
+app.use(compression())
+
 app.use(express.json());
 app.use(cookieParser())
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../uploads")));
 
 amountRoutes(app)
 
