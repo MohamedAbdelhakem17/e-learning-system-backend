@@ -3,6 +3,7 @@ const instructorsRoute = require("./instructorsRoute");
 const EducationRoute = require("./educationRoute");
 const LinksRoute = require("./LinksRoute");
 const CategoryRoute = require("./CategoryRoute");
+
 const SubCategoryRoute = require("./SubCategoryRoute");
 const CoursesRoute = require("./CoursesRoute");
 const LessonRoute = require("./LessonRoute");

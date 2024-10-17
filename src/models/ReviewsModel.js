@@ -57,7 +57,7 @@ const instructorReviewSchema = new mongoose.Schema(
 function populateData(next) {
     this.populate({
         path: "review.user",
-        select: "name profile_pic",
+        select: "name profile_pic first_name last_name",
     });
     next();
 }

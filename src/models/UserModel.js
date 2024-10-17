@@ -62,6 +62,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    
     profile_pic: String,
     about_me: String,
     Introductory_video: String,

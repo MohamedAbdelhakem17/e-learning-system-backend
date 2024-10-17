@@ -131,4 +131,11 @@ coursesSchema.virtual("reviews", {
     justOne: false,
 });
 
+coursesSchema.pre(/^find/, function (next) {
+    this.populate({
+      path: "category_id",
+      select: "name",
+    });
+    next();
+  });
 module.exports = mongoose.model("Course", coursesSchema);

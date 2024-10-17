@@ -43,9 +43,9 @@ class ApiFeatures {
     const { keyword } = this.queryString;
     let query = {};
     if (keyword) {
-      if (modelName === "Product") {
+      if (modelName === "Course") {
         query.$or = [
-          { title: { $regex: keyword, $options: "i" } },
+          { name: { $regex: keyword, $options: "i" } },
           { description: { $regex: keyword, $options: "i" } },
         ];
       } else {

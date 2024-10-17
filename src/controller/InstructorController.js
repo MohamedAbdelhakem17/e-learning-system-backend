@@ -15,15 +15,7 @@ const createFilterObj = (req, res, next) => {
     next();
 };
 
-const getInstructors = Factory.getAll(UserModel, {
-    name: 1,
-    numberOfStudent: 1,
-    rate: 1,
-    specialization: 1,
-    profile_pic: 1,
-    first_name: 1,
-    last_name: 1,
-});
+const getInstructors = Factory.getAll(UserModel);
 
 /**
  * Fetch a specific instructor by ID.
