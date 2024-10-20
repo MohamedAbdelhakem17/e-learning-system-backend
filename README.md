@@ -60,21 +60,8 @@ npm start
 
 This command uses `nodemon` to restart the server automatically when changes are detected.
 
-### 4. Linting
 
-Run the linter to check for code quality:
-
-```bash
-npm run lint
-```
-
-To automatically fix linting issues:
-
-```bash
-npm run lint -- --fix
-```
-
-### 5. API Endpoints
+### 4. API Endpoints
 
 The backend exposes a variety of endpoints under the `/api/v1` prefix. Here’s an overview:
 
@@ -109,11 +96,11 @@ The backend exposes a variety of endpoints under the `/api/v1` prefix. Here’s 
   - `GET /api/v1/cart`: View cart items.
   - `POST /api/v1/order`: Place an order.
 
-### 6. Error Handling
+### 5. Error Handling
 
 The API uses centralized error handling, including handling common errors like `404` (not found) and custom errors via the `AppError` class. Middleware like `ErrorHandleMiddleware` is used to ensure consistent error responses.
 
-### 7. Development Tools
+### 6. Development Tools
 
 This project leverages several important tools and libraries for development, including:
 
@@ -125,7 +112,7 @@ This project leverages several important tools and libraries for development, in
 - `multer` for handling file uploads.
 - `nodemailer` for sending emails.
 
-### 8. Deployment
+### 7. Deployment
 
 To deploy the app, make sure to:
 
