@@ -70,7 +70,7 @@ const signup = asyncHandler(async (req, res) => {
  */
 const signin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const user = await UserModel.findOne({ email }, { first_name: 1, last_name: 1, profile_pic: 1, email: 1, phone: 1, password: 1 });
+  const user = await UserModel.findOne({ email }, { first_name: 1, last_name: 1, profile_pic: 1, email: 1, phone: 1, password: 1, is_instructor: 1 });
 
   if (!user) {
     throw new AppError(401, httpstatus.FAIL, "Invalid email or password.");
