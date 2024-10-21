@@ -24,6 +24,16 @@ const handelVideoUpload = videoManipulation("lesson", "LessonsVideos")
 // @desc   Get List Of Course
 // @route  GET  api/v1/Course
 // @access Public
+
+const createFilterObj = (req, res, next) => {
+  const filterObject = req.params.categoryId
+    ? { category_id: req.params.categoryId }
+    : {};
+
+  req.body.filterObj = filterObject;
+  next();
+};
+
 const getCourses = Factory.getAll(CoursesModel);
 
 //  @desc   Get Spesific Course
@@ -34,6 +44,10 @@ const getCourse = Factory.getOne(CoursesModel);
 //  @desc   Create New Course
 //  @route  Post  api/v1/Course
 //  @access Private
+const setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
 const createCourse = Factory.createOne(CoursesModel);
 
 //  @desc   Update Course
@@ -55,5 +69,7 @@ module.exports = {
   imageManipulation,
   imageCourseUpload,
   uploadVideo,
-  handelVideoUpload
+  handelVideoUpload,
+  setCategoryIdToBody,
+  createFilterObj
 };

@@ -7,7 +7,7 @@ const allowTo = require("../middleware/allowTomiddleware");
 const isInstructor = require("../middleware/isInstructorMiddleware")
 const CoursesController = require("../controller/CoursesController");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 // Nested Route
 const LessonRoute = require("./LessonRoute");
@@ -19,7 +19,7 @@ router.use("/:courseId/reviewCourse", ReviewCourseRoute);
 
 router
   .route("/")
-  .get(CoursesController.getCourses)
+  .get(CoursesController.createFilterObj, CoursesController.getCourses)
 
   .post(
     protect,
@@ -29,6 +29,7 @@ router
     CoursesController.imageManipulation,
     CoursesController.uploadVideo("introductory_video"),
     CoursesController.handelVideoUpload,
+    CoursesController.setCategoryIdToBody,
     CoursesController.createCourse
   );
 
